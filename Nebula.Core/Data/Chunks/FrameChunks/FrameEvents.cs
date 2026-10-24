@@ -1,5 +1,6 @@
 ﻿using Nebula.Core.Data.Chunks.FrameChunks.Events;
 using Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters;
+using Nebula.Core.Data.Chunks.ObjectChunks;
 using Nebula.Core.Memory;
 using Nebula.Core.Utilities;
 
@@ -240,6 +241,42 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
 
             if (Parent == null) // Global Events
                 reader.Seek(endOffset);
+            else
+                foreach (Event evnt in Events)
+                    foreach (Condition cond in evnt.Conditions)
+                        foreach (Parameter param in cond.Parameters.Where(x => x.Code == 38))
+                            if (param.Data is ParameterGroup group)
+                                Parent.GroupLookupTable.TryAdd(group.ID, group);
+        }
+
+        /// <summary>
+        /// In MFAs, the ObjectInfo used by events is an EventObject handle (per frame),
+        /// not a frame item handle. Returns null for qualifiers and unknown handles.
+        /// </summary>
+        public ObjectInfo? GetMFAObject(int handle)
+        {
+            if (!EventObjects.TryGetValue(handle, out EventObject? evtObj) || evtObj.ObjectType != 1)
+                return null;
+            NebulaCore.PackageData.FrameItems.Items.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? objectInfo);
+            return objectInfo;
+        }
+
+        /// <summary>
+        /// Name of a qualifier EventObject in an MFA, or null if the handle isn't a qualifier.
+        /// </summary>
+        public string? GetMFAQualifierName(int handle)
+        {
+            if (EventObjects.TryGetValue(handle, out EventObject? evtObj) && evtObj.ObjectType == 3)
+                return evtObj.Name;
+            return null;
+        }
+
+        /// <summary>
+        /// Name of an object referenced by an MFA event (frame item or qualifier).
+        /// </summary>
+        public string GetMFAObjectName(int handle)
+        {
+            return GetMFAObject(handle)?.Name ?? GetMFAQualifierName(handle) ?? "Unknown Object";
         }
 
         public override void WriteCCN(ByteWriter writer, params object[] extraInfo)

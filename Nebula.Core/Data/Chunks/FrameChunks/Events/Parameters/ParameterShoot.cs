@@ -72,7 +72,10 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
 
         public override string ToString()
         {
-            string output = NebulaCore.PackageData.FrameItems.Items[ObjectInfo].Name;
+            // In MFAs, the object reference is an EventObject handle
+            string output = NebulaCore.MFA && Parent?.FrameEvents?.EventObjects.Count > 0
+                ? Parent.FrameEvents.GetMFAObjectName(ObjectInfo)
+                : NebulaCore.PackageData.FrameItems.Items[ObjectInfo].Name;
             if (!ShootFlags["CalculateDirection"])
                 output += " toward " + GetDirection();
             return output + " at speed " + ShootSpeed;

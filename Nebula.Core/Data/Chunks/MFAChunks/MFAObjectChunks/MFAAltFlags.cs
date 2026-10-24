@@ -25,6 +25,8 @@ namespace Nebula.Core.Data.Chunks.MFAChunks
                 AlterableFlags[i] = new MFAAltFlag();
                 AlterableFlags[i].ReadMFA(reader);
             }
+            if (extraInfo.Length > 0 && extraInfo[0] is MFAObjectInfo oi)
+                oi.AltFlags = this;
         }
 
         public override void WriteCCN(ByteWriter writer, params object[] extraInfo)

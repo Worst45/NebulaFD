@@ -25,7 +25,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                 1 => new ParameterObject(),
                 2 or 42 => new ParameterTimer(),
                 3 or 4 or 10 or 11 or 12 or 14 or 17 or
-                31 or 37 or 43 or 44 or 50 or 58 or 60 or 61 => new ParameterShort(),
+                31 or 43 or 44 or 50 or 58 or 60 or 61 => new ParameterShort(),
+                37 => new ParameterComment(),
                 5 or 25 or 29 or 34 or 48 or 49 or 56 or 67 or 70 => new ParameterInt(),
                 6 or 7 or 35 or 36 => new ParameterSample(),
                 9 => new ParameterCreate(),
@@ -50,6 +51,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                 _ => new ParameterChunk(Code)
             };
             Data.Parent = this;
+            if (Data is ParameterComment comment)
+                comment.Size = (int)(endPosition - reader.Tell());
             Data.ReadCCN(reader, extraInfo);
 
             reader.Seek(endPosition);

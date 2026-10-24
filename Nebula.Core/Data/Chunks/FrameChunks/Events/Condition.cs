@@ -394,8 +394,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 
             Parameters = new Parameter[1]
             {
-                new() { Data = groupParam, Code = 39 }
+                new() { Data = groupParam, Code = 39, FrameEvents = Parent.Parent }
             };
+            groupParam.Parent = Parameters[0];
         }
 
         public override string ToString()
@@ -466,7 +467,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                                 2 => "right",
                                 _ => "left"
                             };
-                            return return6 + $" button within zone {Parameters[1]}";
+                            return return6 + $" button within zone {GetZone(1)}";
                         case -5:
                             ParameterClick click5 = (ParameterClick)Parameters[0].Data;
                             string return5 = $"User {(click5.IsDouble != 0 ? "double-" : "")}clicks with ";
@@ -481,7 +482,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                         case -4:
                             return $"Mouse pointer is over {Parameters[0]}";
                         case -3:
-                            return $"Mouse pointer lays within zone {Parameters[0]}";
+                            return $"Mouse pointer lays within zone {GetZone(0)}";
                         case -2:
                             return $"Repeat while \"{GetKeyboardKey(((ParameterShort)Parameters[0].Data).Value)}\" is pressed";
                         case -1:
@@ -502,17 +503,18 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                         case -19:
                             return $"Pick objects with fixed value {GetComparison(((ParameterExpressions)Parameters[0].Data).Comparison)} {Parameters[0]}";
                         case -18:
-                            return $"Pick all objects in zone {Parameters[0]}";
+                            return $"Pick all objects in zone {GetZone(0)}";
                         case -17:
                             return "Pick an object at random";
                         case -16:
-                            return $"Pick a random object from zone {Parameters[0]}";
+                            return $"Pick a random object from zone {GetZone(0)}";
                         case -15:
                             return $"Total number of objects {GetComparison(((ParameterExpressions)Parameters[0].Data).Comparison)} {Parameters[0]}";
                         case -14:
-                            return $"Number of objects in zone {Parameters[0]} {GetComparison(((ParameterExpressions)Parameters[0].Data).Comparison)} {Parameters[0]}";
+                            string zone14 = GetZone(0, out int next14);
+                            return $"Number of objects in zone {zone14} {GetComparison(((ParameterExpressions)Parameters[next14].Data).Comparison)} {Parameters[next14]}";
                         case -13:
-                            return $"No more objects in zone {Parameters[0]}";
+                            return $"No more objects in zone {GetZone(0)}";
                     }
                 case -4:
                     switch (Num)
@@ -636,6 +638,12 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                             return $"Menu option \"{GetMenuItemName(((ParameterInt)Parameters[0].Data).Value)}\" selected";
                         case -12:
                             return $"Group \"{Parameters[0]}\" is activated";
+                        case -11:
+                            return "[END GROUP]";
+                        case -10:
+                            return Parameters[0].ToString();
+                        case -9:
+                            return "[COMMENT] " + Parameters[0];
                         case -8:
                             return $"{GetGlobalValueName(Parameters[0].Data)} {GetComparison(((ParameterExpressions)Parameters[1].Data).Comparison)} {Parameters[1]}";
                         case -7:
@@ -730,9 +738,10 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                         case -32:
                             return $"Number of {GetObjectName()} {GetComparison(((ParameterExpressions)Parameters[0].Data).Comparison)} {Parameters[0]}";
                         case -31:
-                            return $"No more {GetObjectName()} in zone {Parameters[0]}";
+                            return $"No more {GetObjectName()} in zone {GetZone(0)}";
                         case -30:
-                            return $"Number of {GetObjectName()} in zone {Parameters[0]} {GetComparison(((ParameterExpressions)Parameters[1].Data).Comparison)} {Parameters[1]}";
+                            string zone30 = GetZone(0, out int next30);
+                            return $"Number of {GetObjectName()} in zone {zone30} {GetComparison(((ParameterExpressions)Parameters[next30].Data).Comparison)} {Parameters[next30]}";
                         case -29:
                             return $"{GetObjectName()} is visible";
                         case -28:

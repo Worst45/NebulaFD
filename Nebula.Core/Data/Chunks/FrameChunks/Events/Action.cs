@@ -427,8 +427,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 
 			Parameters = new Parameter[1]
 			{
-				new() { Data = groupParam, Code = 39 }
+				new() { Data = groupParam, Code = 39, FrameEvents = Parent.Parent }
 			};
+			groupParam.Parent = Parameters[0];
 		}
 
         public override string ToString()
@@ -670,6 +671,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                     {
                         default:
                             return $"[ERROR] Could not find ObjectType {ObjectType}, Num {Num}";
+                        case 0:
+                            return Header + "Skip";
                         case 2:
                             ParameterFile file2 = (ParameterFile)Parameters[0].Data;
                             return Header + $"Execute external program {file2.FileName} {file2.Command}{(file2.FileFlags["WaitForEnd"] && file2.FileFlags["HideApplication"] ? " (wait,hide)" : file2.FileFlags["WaitForEnd"] ? " (wait)" : file2.FileFlags["HideApplication"] ? " (hide)" : "")}";

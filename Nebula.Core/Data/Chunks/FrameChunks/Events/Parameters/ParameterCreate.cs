@@ -73,10 +73,14 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
 
         public override string ToString()
         {
-            string output = $"{NebulaCore.PackageData.FrameItems.Items[ObjectInfo].Name} at ({X},{Y})";
+            // In MFAs, both object references are EventObject handles
+            bool mfa = NebulaCore.MFA && Parent?.FrameEvents?.EventObjects.Count > 0;
+            string output = $"{(mfa ? Parent!.FrameEvents!.GetMFAObjectName(ObjectInfo) : NebulaCore.PackageData.FrameItems.Items[ObjectInfo].Name)} at ({X},{Y})";
             if (ObjectInfoParent != ushort.MaxValue)
             {
-                if (NebulaCore.PackageData.FrameItems.Items.ContainsKey(ObjectInfoParent))
+                if (mfa)
+                    output += " from " + Parent!.FrameEvents!.GetMFAObjectName(ObjectInfoParent);
+                else if (NebulaCore.PackageData.FrameItems.Items.ContainsKey(ObjectInfoParent))
                     output += " from " + NebulaCore.PackageData.FrameItems.Items[ObjectInfoParent].Name;
                 else
                     output += " from Qualifier " + (ObjectInfoParent & 0x7FFF) + ", Type " + TypeParent;

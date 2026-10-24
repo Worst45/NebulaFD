@@ -39,8 +39,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
 
         public override string ToString()
         {
-            string? name = Parent?.FrameEvents?.Parent?.GroupLookupTable[(short)ID].Name;
-            return name == null ? "Unknown Group" : name;
+            ParameterGroup? group = null;
+            Parent?.FrameEvents?.Parent?.GroupLookupTable.TryGetValue((short)ID, out group);
+            return group == null ? "Unknown Group" : group.Name;
         }
     }
 }

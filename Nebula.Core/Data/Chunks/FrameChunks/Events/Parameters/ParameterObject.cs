@@ -37,6 +37,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
             ObjectInfo? objectInfo = GetObject();
             if (objectInfo != null)
                 return objectInfo.Name;
+            if (NebulaCore.MFA && Parent?.FrameEvents?.EventObjects.Count > 0)
+                return Parent.FrameEvents.GetMFAObjectName(ObjectInfo);
             Qualifier[] qualifier = Parent?.FrameEvents?.Qualifiers.Where(x => x.ObjectInfo == ObjectInfo && x.Type == ObjectType).ToArray()!;
             if (qualifier.Length > 0)
                 return GetQualifierName(qualifier.First());
@@ -48,7 +50,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
             if (Parent?.FrameEvents?.Qualifiers.Where(x => x.ObjectInfo == ObjectInfo).Any() == true)
                 return null;
             else if (NebulaCore.MFA && Parent?.FrameEvents?.EventObjects.Count > 0)
-                return NebulaCore.PackageData.FrameItems.Items[(int)Parent.FrameEvents.EventObjects[ObjectInfo].ItemHandle];
+                return Parent.FrameEvents.GetMFAObject(ObjectInfo);
             else
                 return NebulaCore.PackageData.FrameItems.Items[ObjectInfo];
         }

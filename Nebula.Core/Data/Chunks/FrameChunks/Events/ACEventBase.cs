@@ -68,10 +68,30 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             if (Parent?.Parent.Qualifiers.Where(x => x.ObjectInfo == ObjectInfo).Any() == true)
                 return null;
             else if (NebulaCore.MFA && Parent?.Parent.EventObjects.Count > 0)
-                return NebulaCore.PackageData.FrameItems.Items[(int)Parent.Parent.EventObjects[ObjectInfo].ItemHandle];
+                return Parent.Parent.GetMFAObject(ObjectInfo);
             else
                 return NebulaCore.PackageData.FrameItems.Items[ObjectInfo];
         }
+
+        /// <summary>
+        /// Zone parameters with expressions (code 72) are followed by 4 expression
+        /// parameters (x1, y1, x2, y2); the fixed zone stored in the code 72 parameter is unused.
+        /// </summary>
+        /// <param name="index">Index of the zone parameter</param>
+        /// <param name="next">Index of the parameter following the zone</param>
+        public string GetZone(int index, out int next)
+        {
+            if (Parameters[index].Code == 72 && Parameters.Length >= index + 5 &&
+                Parameters.Skip(index + 1).Take(4).All(x => x.Data is ParameterExpressions))
+            {
+                next = index + 5;
+                return $"({Parameters[index + 1]},{Parameters[index + 2]}) to ({Parameters[index + 3]},{Parameters[index + 4]})";
+            }
+            next = index + 1;
+            return Parameters[index].ToString();
+        }
+
+        public string GetZone(int index) => GetZone(index, out _);
 
         public string GetGlobalValueName(ParameterChunk param)
         {
@@ -289,6 +309,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             ObjectInfo? objectInfo = GetObject();
             if (objectInfo != null)
                 return objectInfo.Name;
+            if (NebulaCore.MFA && Parent?.Parent.EventObjects.Count > 0)
+                return Parent.Parent.GetMFAObjectName(ObjectInfo);
             Qualifier[] qualifier = Parent?.Parent.Qualifiers.Where(x => x.ObjectInfo == ObjectInfo && x.Type == ObjectType).ToArray()!;
             if (qualifier.Length > 0)
                 return GetQualifierName(qualifier.First());

@@ -104,6 +104,8 @@ namespace Nebula
         public static string GetCommitHash()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
+            if (string.IsNullOrEmpty(assembly.Location)) // Single-file publish
+                return "Unknown";
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             string? version = fileVersionInfo.ProductVersion;
             if (version != null && version.Length > 6)
