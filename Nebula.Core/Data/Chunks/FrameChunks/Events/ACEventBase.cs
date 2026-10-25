@@ -508,10 +508,16 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             else return oC.ObjectAnimations.Animations[id].Name;
         }
 
-        public string GetFrameName(short id)
+        public string GetFrameName(int id)
         {
             try
             {
+                // MFA: the parameter is the frame handle (FrameHandles is index -> handle there)
+                if (NebulaCore.MFA)
+                {
+                    int index = NebulaCore.PackageData.Frames.FindIndex(x => x.Handle == id);
+                    return $"\"{NebulaCore.PackageData.Frames[index].FrameName}\" ({index + 1})";
+                }
                 return $"\"{NebulaCore.PackageData.Frames[NebulaCore.PackageData.FrameHandles[id]].FrameName}\" ({NebulaCore.PackageData.FrameHandles[id] + 1})";
             }
             catch

@@ -518,7 +518,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                         case 1:
                             return Header + "Previous frame";
                         case 2:
-                            return Header + $"Jump to frame {((Parameters[0].Data is ParameterExpressions) ? Parameters[0] : GetFrameName(((ParameterShort)Parameters[0].Data).Value))}";
+                            return Header + $"Jump to frame {((Parameters[0].Data is ParameterExpressions) ? Parameters[0] : GetFrameName(Parameters[0].Data switch { ParameterInt i => i.Value, ParameterShort s => s.Value, _ => -1 }))}";
                         case 4:
                             return Header + "End the application";
                         case 5:
