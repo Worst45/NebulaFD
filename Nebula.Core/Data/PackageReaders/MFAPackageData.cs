@@ -36,7 +36,8 @@ namespace Nebula.Core.Data.PackageReaders
             RuntimeSubversion = (short)reader.ReadUShort();
             ProductVersion = reader.ReadInt();
             ProductBuild = reader.ReadInt();
-            reader.Skip(4); // Stamp
+            if (Header != "MMF2") // Language ID (0x409, 0x40C...), not in non-unicode MMF2 MFAs
+                reader.Skip(4);
             NebulaCore.Build = ProductBuild;
             this.Log("Fusion Build: " + ProductBuild);
 
@@ -84,7 +85,7 @@ namespace Nebula.Core.Data.PackageReaders
             reader.ReadAutoYuniversal();
             reader.ReadAutoYuniversal();
             About = reader.ReadAutoYuniversal();
-            reader.Skip(4);
+            reader.Skip(reader.ReadInt()); // Installer settings ("IC  " block), size 0 in most projects
             BinaryFiles.ReadMFA(reader);
 
             AppHeader.ControlType = new int[reader.ReadInt()];
@@ -113,9 +114,14 @@ namespace Nebula.Core.Data.PackageReaders
                 long end = reader.Tell() + cnt * 4;
                 if (cnt >= 3)
                 {
-                    NebulaCore.CurrentReader.Icons.Add(64, IconBank[reader.ReadUInt()].GetBitmap());
-                    NebulaCore.CurrentReader.Icons.Add(32, IconBank[reader.ReadUInt()].GetBitmap());
-                    NebulaCore.CurrentReader.Icons.Add(16, IconBank[reader.ReadUInt()].GetBitmap());
+                    // Older builds can reference icon handles that aren't in the icon bank
+                    foreach (int size in new[] { 64, 32, 16 })
+                    {
+                        uint iconHandle = reader.ReadUInt();
+                        if (IconBank.Images.ContainsKey(iconHandle))
+                            try { NebulaCore.CurrentReader.Icons[size] = IconBank[iconHandle].GetBitmap(); }
+                            catch { } // Empty or unreadable icon
+                    }
                 }
                 reader.Seek(end);
             }
@@ -171,6 +177,10 @@ namespace Nebula.Core.Data.PackageReaders
                     newOI.Header.InkEffectParam = oI.InkEffectParameter;
                     newOI.Name = oI.Name;
 
+                    // An object whose properties aren't in the expected form is still registered
+                    // (name, handle, type), so that events can reference it
+                    try
+                    {
                     if (newOI.Header.InkEffect != 1 && oI.ObjectEffects != null)
                     {
                         newOI.Header.RGBCoeff = oI.ObjectEffects.RGBCoeff;
@@ -333,7 +343,14 @@ namespace Nebula.Core.Data.PackageReaders
                             newOI.Properties = newOC;
                             break;
                     }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Log($"Couldn't convert object '{oI.Name}' (type {oI.ObjectType}): {ex.Message}");
+                        newOI.Properties = oI.ObjectType >= 2 ? new ObjectCommon() : newOI.Properties;
+                    }
 
+                    frame.MFAItems[newOI.Header.Handle] = newOI;
                     if (!frameItems.ContainsKey(newOI.Header.Handle))
                         frameItems.Add(newOI.Header.Handle, newOI);
                 }

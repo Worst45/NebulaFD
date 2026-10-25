@@ -257,6 +257,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         {
             if (!EventObjects.TryGetValue(handle, out EventObject? evtObj) || evtObj.ObjectType != 1)
                 return null;
+            // Object handles are per frame in MFAs: look in this frame first
+            if (Parent != null && Parent.MFAItems.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? frameObject))
+                return frameObject;
             NebulaCore.PackageData.FrameItems.Items.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? objectInfo);
             return objectInfo;
         }

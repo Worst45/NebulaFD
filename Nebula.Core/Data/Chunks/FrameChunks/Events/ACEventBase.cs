@@ -134,7 +134,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             if (parameter is ParameterShort idData)
             {
                 short id = idData.Value;
-                ObjectCommon? oC = (ObjectCommon)GetObject()?.Properties;
+                ObjectCommon? oC = GetObject()?.Properties as ObjectCommon;
                 if (oC == null || oC.ObjectAlterableValues.Names.Length <= id || string.IsNullOrEmpty(oC.ObjectAlterableValues.Names[id]))
                 {
                     string output = "Alterable Value ";
@@ -153,7 +153,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             if (parameter is ParameterShort idData)
             {
                 short id = idData.Value;
-                ObjectCommon? oC = (ObjectCommon)GetObject()?.Properties;
+                ObjectCommon? oC = GetObject()?.Properties as ObjectCommon;
                 if (oC == null || oC.ObjectAlterableStrings.Names.Length <= id || string.IsNullOrEmpty(oC.ObjectAlterableStrings.Names[id]))
                 {
                     string output = "Alterable String ";
@@ -483,7 +483,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 
         public string GetObjectAnimation(short id)
         {
-            ObjectCommon? oC = (ObjectCommon)GetObject()?.Properties;
+            ObjectCommon? oC = GetObject()?.Properties as ObjectCommon;
             if (oC != null && !oC.ObjectAnimations.Animations.ContainsKey(id))
                 return "Deleted Animation " + id;
             if (oC == null || string.IsNullOrEmpty(oC.ObjectAnimations.Animations[id].Name))

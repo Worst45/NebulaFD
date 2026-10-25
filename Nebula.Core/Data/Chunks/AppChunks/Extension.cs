@@ -45,7 +45,8 @@ namespace Nebula.Core.Data.Chunks.AppChunks
             Name = reader.ReadAutoYuniversal();
             MagicNumber = reader.ReadInt();
             SubType = reader.ReadAutoYuniversal();
-            reader.Skip(4); // Is Unicode
+            if (NebulaCore.Yunicode) // Not in non-unicode MMF2 MFAs
+                reader.Skip(4); // Is Unicode
         }
 
         public override void WriteCCN(ByteWriter writer, params object[] extraInfo)

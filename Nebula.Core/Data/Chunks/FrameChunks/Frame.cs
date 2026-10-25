@@ -39,6 +39,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         public MFAFrameInfo MFAFrameInfo = new();
         public Bitmap? BitmapCache = null;
         public Dictionary<short, ParameterGroup> GroupLookupTable = new();
+        // MFA: object handles are per frame (the same handle can be a different object in another frame)
+        public Dictionary<int, ObjectInfo> MFAItems = new();
 
         public Frame()
         {
@@ -91,7 +93,11 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
             FrameEvents.MaxObjects = reader.ReadInt();
 
             FramePassword = reader.ReadAutoYuniversal();
-            reader.Skip(reader.ReadInt()); // ?
+            // Stored like an auto-Yunicode string: length, flags (0x8000 = unicode), data.
+            // Newer builds store 12 non-unicode bytes ("Ibs..."), older ones an empty unicode string.
+            short unkLength = reader.ReadShort();
+            ushort unkFlags = reader.ReadUShort();
+            reader.Skip(unkLength * ((unkFlags & 0x8000) != 0 ? 2 : 1));
 
             MFAFrameInfo.EditorX = reader.ReadInt();
             MFAFrameInfo.EditorY = reader.ReadInt();

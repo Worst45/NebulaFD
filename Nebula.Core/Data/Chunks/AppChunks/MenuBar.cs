@@ -89,6 +89,7 @@ namespace Nebula.Core.Data.Chunks.AppChunks
                 AccelId.Add(reader.ReadShort());
                 reader.Skip(2);
             }
+            reader.Seek(startOffset + mainSize); // Continue after the whole menu block
         }
 
         public override void WriteCCN(ByteWriter writer, params object[] extraInfo)

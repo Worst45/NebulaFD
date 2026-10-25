@@ -26,15 +26,17 @@ namespace Nebula.Core.Data.Chunks.MFAChunks
 
             if (IconHandles.Length == 2)
             {
-                try
+                var iconBank = ((MFAPackageData)NebulaCore.PackageData).IconBank;
+                AddIcon(256, IconHandles[1]);
+                AddIcon(128, IconHandles[0]);
+
+                // Handles can be off by one, and can reference missing icons in older builds
+                void AddIcon(int size, uint handle)
                 {
-                    NebulaCore.CurrentReader.Icons.Add(256, ((MFAPackageData)NebulaCore.PackageData).IconBank[IconHandles[1]].GetBitmap());
-                    NebulaCore.CurrentReader.Icons.Add(128, ((MFAPackageData)NebulaCore.PackageData).IconBank[IconHandles[0]].GetBitmap());
-                }
-                catch
-                {
-                    NebulaCore.CurrentReader.Icons.Add(256, ((MFAPackageData)NebulaCore.PackageData).IconBank[IconHandles[1] + 1].GetBitmap());
-                    NebulaCore.CurrentReader.Icons.Add(128, ((MFAPackageData)NebulaCore.PackageData).IconBank[IconHandles[0] + 1].GetBitmap());
+                    if (iconBank.Images.ContainsKey(handle))
+                        NebulaCore.CurrentReader.Icons[size] = iconBank[handle].GetBitmap();
+                    else if (iconBank.Images.ContainsKey(handle + 1))
+                        NebulaCore.CurrentReader.Icons[size] = iconBank[handle + 1].GetBitmap();
                 }
             }
         }
