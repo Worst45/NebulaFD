@@ -563,7 +563,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
 
         public string GetGlobalValueName()
         {
-            short id = (short)((uint)((ExpressionCommon)Expression).Value << 16);
+            short id = (short)((ExpressionCommon)Expression).Value; // Index of the global value/string
             if (NebulaCore.PackageData.GlobalValueNames.Names.Length <= id || string.IsNullOrEmpty(NebulaCore.PackageData.GlobalValueNames.Names[id]))
             {
                 string output = "Global Value ";
@@ -577,7 +577,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
 
         public string GetGlobalStringName()
         {
-            short id = (short)((uint)((ExpressionCommon)Expression).Value << 16);
+            short id = (short)((ExpressionCommon)Expression).Value; // Index of the global value/string
             if (NebulaCore.PackageData.GlobalStringNames.Names.Length <= id || string.IsNullOrEmpty(NebulaCore.PackageData.GlobalStringNames.Names[id]))
             {
                 string output = "Global String ";
