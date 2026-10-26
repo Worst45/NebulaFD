@@ -91,7 +91,8 @@ namespace Nebula.Core.Memory
 
         public override double ReadDouble()
         {
-            if (!NebulaCore.Windows)
+            // Fixed point in some non-Windows builds; MFAs store a regular IEEE double
+            if (!NebulaCore.Windows && !NebulaCore.MFA)
                 return ReadLong() / 4294967296.0;
             return base.ReadDouble();
         }

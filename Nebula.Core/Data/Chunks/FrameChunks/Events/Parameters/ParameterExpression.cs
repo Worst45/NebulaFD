@@ -290,7 +290,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
                         case 22:
                             return "Len(";
                         case 23:
-                            return ((ExpressionDouble)Expression).Value.ToString();
+                            return ((ExpressionDouble)Expression).Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
                         case 24:
                             return GetGlobalValueName();
                         case 28:
