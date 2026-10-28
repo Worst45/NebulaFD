@@ -290,7 +290,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
                         case 22:
                             return "Len(";
                         case 23:
-                            return ((ExpressionDouble)Expression).Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                            // Keep a decimal point on round values (1.0), to tell them apart from integers
+                            string dbl = ((ExpressionDouble)Expression).Value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+                            return dbl.IndexOfAny(new[] { '.', 'E', 'N', 'I' }) >= 0 ? dbl : dbl + ".0";
                         case 24:
                             return GetGlobalValueName();
                         case 28:
