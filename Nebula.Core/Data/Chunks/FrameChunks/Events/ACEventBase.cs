@@ -169,35 +169,25 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 
         public string GetMenuItemName(int id)
         {
-            MenuItem? item = null;
-            foreach (MenuItem menu in NebulaCore.PackageData.MenuBar.Items)
-            {
-                if (menu.ID == id)
-                {
-                    item = menu;
-                    break;
-                }
-                if (menu.Flags["Parent"])
-                {
-                    MenuItem menuItem = GetMenuItem(id, menu.Items.ToArray());
-                    if (menuItem != null)
-                    {
-                        item = menuItem;
-                        break;
-                    }
-                }
-            }
-            return item != null ? item.Name.Split('\t')[0] : "";
+            MenuItem? item = GetMenuItem(id, NebulaCore.PackageData.MenuBar.Items.ToArray());
+            // Not in the menu bar (predefined command or deleted item): show its identifier
+            return item != null ? item.Name.Split('\t')[0] : $"[menu id {id}]";
         }
 
-        public MenuItem GetMenuItem(int id, MenuItem[] parent)
+        // Depth-first search through every sub-menu: an item that is not in the first
+        // sub-menu of its parent must still be found (e.g. Options > Display > item)
+        public MenuItem? GetMenuItem(int id, MenuItem[] parent)
         {
             foreach (MenuItem menu in parent)
             {
                 if (menu.ID == id)
                     return menu;
                 if (menu.Flags["Parent"])
-                    return GetMenuItem(id, menu.Items.ToArray());
+                {
+                    MenuItem? found = GetMenuItem(id, menu.Items.ToArray());
+                    if (found != null)
+                        return found;
+                }
             }
             return null;
         }
