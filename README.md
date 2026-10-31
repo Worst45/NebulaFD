@@ -17,7 +17,9 @@ repository has no license. The original README follows.
 - **The structure of the event list is kept**: groups (and whether they start disabled) and the
   author's comments.
 - **Correct values**: decimal numbers, zones, "Jump to frame", and decimal numbers that stay
-  distinct from whole numbers (`1.0` vs `1`).
+  distinct from whole numbers (`1.0` vs `1`), menu options in nested sub-menus.
+- **Extension expressions as in the editor** (`GroupItemValue("Ini", "Game", "sound")`) when the host
+  application provides their names.
 - **Fewer crashes** on unusual projects: installer settings, menus, icons, objects that can't be
   converted.
 - **Easier to investigate unknown parameters**: their raw bytes are kept, for debugging.
@@ -52,6 +54,13 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
 - "Jump to frame": no more `InvalidCastException` in build 296 (the frame parameter is a 32-bit
   integer), and in MFAs the frame is found by its handle.
 - Global values and strings used in an expression show their own name (the index was always 0).
+- Menu options: an item in a sub-menu that is not the first sub-menu of its parent is found
+  (`GetMenuItem` returned after searching the first sub-menu only); an unknown identifier shows
+  `[menu id N]` instead of an empty name.
+- Extension expressions: optional resolver `ParameterExpression.ExtensionExpressionInfo` (set by the
+  host from a catalog of extensions) for the editor name of the expression, written in the editor's
+  syntax `Name("object", parameters)`. Before, `Expression ID 83("Ini")"Game", "sound")` lacked the
+  separator between the object and the parameters.
 - Decimal constants: MFAs store a regular IEEE double, which `ByteReader.ReadDouble` read as the
   fixed-point format of some non-Windows builds (1.25 showed as 1072955392). Decimals are rendered
   in the invariant culture (`1.25`, not `1,25`) and keep a decimal point when round (`1.0`, not `1`).
