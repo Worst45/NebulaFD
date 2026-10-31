@@ -64,9 +64,32 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
         public override string ToString()
         {
             string str = string.Empty;
-            foreach (ParameterExpression expression in Expressions)
-                str += expression.ToString();
+            for (int i = 0; i < Expressions.Count; i++)
+            {
+                ParameterExpression expression = Expressions[i];
+                if (expression.IsExtensionExpression)
+                    str += expression.ExtensionToString(HasParameters(i));
+                else
+                    str += expression.ToString();
+            }
             return str.Trim();
+        }
+
+        // Does the extension expression at index i take parameters? Fusion stores them right after
+        // the expression token, closed by a ")" token. After an expression without parameters, only
+        // an operator, "," or ")" (or the end) can follow, so any other token starts a parameter.
+        // The only ambiguous case is a parameter starting with a minus sign: the resolver's
+        // parameter count decides then.
+        bool HasParameters(int i)
+        {
+            if (i + 1 >= Expressions.Count)
+                return false;
+            ParameterExpression next = Expressions[i + 1];
+            if (next.ObjectType == -1 && (next.Num == -3 || next.Num == -2)) // "," or ")"
+                return false;
+            if (next.ObjectType == 0) // operator
+                return next.Num == 4 && Expressions[i].ExtensionParameterCount > 0; // " - "
+            return true;
         }
     }
 }

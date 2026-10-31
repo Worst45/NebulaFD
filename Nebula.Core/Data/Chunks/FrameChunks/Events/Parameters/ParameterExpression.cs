@@ -20,6 +20,27 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
             ChunkName = "ParameterExpression";
         }
 
+        // Optional resolver set by the host application (e.g. from a catalog of extensions):
+        // editor name of an extension expression ("GroupItemValue(") and its number of parameters
+        // (-1 = unknown). Returns null when the expression is unknown.
+        public static Func<ParameterExpression, (string Name, int ParameterCount)?>? ExtensionExpressionInfo;
+
+        // Expression of an extension object (its own expressions start at 80)
+        public bool IsExtensionExpression => ObjectType >= 32 && Num >= 80;
+
+        // Number of parameters of an extension expression according to the resolver, -1 if unknown
+        public int ExtensionParameterCount => ExtensionExpressionInfo?.Invoke(this)?.ParameterCount ?? -1;
+
+        // Extension expression written as in the editor: Name("object") or, when the following
+        // tokens are its parameters (closed by a ")" token), Name("object", ...
+        public string ExtensionToString(bool hasParameters)
+        {
+            string name = ExtensionExpressionInfo?.Invoke(this)?.Name ?? $"Expression ID {Num}(";
+            if (!name.EndsWith('('))
+                name += "(";
+            return hasParameters ? $"{name}\"{GetObjectName()}\", " : $"{name}\"{GetObjectName()}\")";
+        }
+
         public override void ReadCCN(ByteReader reader, params object[] extraInfo)
         {
             long Debut = reader.Tell();
@@ -455,7 +476,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
                             switch (ObjectType)
                             {
                                 default:
-                                    return $"Expression ID {Num}(\"{GetObjectName()}\")";
+                                    return ExtensionToString(false);
                             }
                         case 1:
                             return $"Y(\"{GetObjectName()}\")";
