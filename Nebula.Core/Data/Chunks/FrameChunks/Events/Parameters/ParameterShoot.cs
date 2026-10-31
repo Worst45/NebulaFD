@@ -81,34 +81,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
             return output + " at speed " + ShootSpeed;
         }
 
-        public string GetDirection()
-        {
-            string output = "...........";
-            BitDict dict = new BitDict();
-            dict.Value = (uint)Direction;
-            if (dict.Value == uint.MaxValue)
-                output += ".";
-            else if (dict["31"])
-                output += "..........";
-            else if (dict["30"])
-                output += ".........";
-            else if (dict["29"] || dict["28"] || dict["27"])
-                output += "........";
-            else if (dict["26"] || dict["25"] || dict["24"])
-                output += ".......";
-            else if (dict["20"] || dict["21"] || dict["22"] || dict["23"])
-                output += "......";
-            else if (dict["17"] || dict["18"] || dict["19"])
-                output += ".....";
-            else if (dict["14"] || dict["15"] || dict["16"])
-                output += "....";
-            else if (dict["10"] || dict["11"] || dict["12"] || dict["13"])
-                output += "...";
-            else if (dict["7"] || dict["8"] || dict["9"])
-                output += "..";
-            else if (dict["4"] || dict["5"] || dict["6"])
-                output += ".";
-            return output;
-        }
+        // Same 32-bit direction mask as the direction parameter (bit n = direction n)
+        public string GetDirection() => ACEventBase.GetDirectionMask((uint)Direction);
     }
 }

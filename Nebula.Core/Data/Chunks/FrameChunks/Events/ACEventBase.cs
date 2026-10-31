@@ -440,36 +440,40 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
         public string GetDirection(ParameterChunk param)
         {
             if (param is ParameterInt p)
-            {
-                string output = "...........";
-                BitDict dict = new BitDict();
-                dict.Value = (uint)p.Value;
-                if (dict.Value == uint.MaxValue)
-                    output += ".";
-                else if (dict["31"])
-                    output += "..........";
-                else if (dict["30"])
-                    output += ".........";
-                else if (dict["29"] || dict["28"] || dict["27"])
-                    output += "........";
-                else if (dict["26"] || dict["25"] || dict["24"])
-                    output += ".......";
-                else if (dict["20"] || dict["21"] || dict["22"] || dict["23"])
-                    output += "......";
-                else if (dict["17"] || dict["18"] || dict["19"])
-                    output += ".....";
-                else if (dict["14"] || dict["15"] || dict["16"])
-                    output += "....";
-                else if (dict["10"] || dict["11"] || dict["12"] || dict["13"])
-                    output += "...";
-                else if (dict["7"] || dict["8"] || dict["9"])
-                    output += "..";
-                else if (dict["4"] || dict["5"] || dict["6"])
-                    output += ".";
-                return output;
-            }
+                return GetDirectionMask((uint)p.Value);
             else return param.ToString();
         }
+
+        // Direction parameter: a 32-bit mask, bit n = direction n of the editor's wheel (32
+        // directions, counter-clockwise: 0 = right, 8 = up, 16 = left, 24 = down). Several bits =
+        // several directions (picked at random when setting a direction).
+        public static string GetDirectionMask(uint mask)
+        {
+            if (mask == uint.MaxValue)
+                return "all directions";
+            var directions = Enumerable.Range(0, 32).Where(i => (mask & (1u << i)) != 0)
+                                       .Select(GetDirectionName).ToList();
+            return directions.Count switch
+            {
+                0 => "no direction",
+                1 => directions[0],
+                _ => "{" + string.Join(", ", directions) + "}"
+            };
+        }
+
+        // "16 (left)": number of the direction, with its name for the 8 main directions
+        public static string GetDirectionName(int dir) => dir switch
+        {
+            0 => "0 (right)",
+            4 => "4 (up-right)",
+            8 => "8 (up)",
+            12 => "12 (up-left)",
+            16 => "16 (left)",
+            20 => "20 (down-left)",
+            24 => "24 (down)",
+            28 => "28 (down-right)",
+            _ => dir.ToString()
+        };
 
         public string GetObjectAnimation(short id)
         {

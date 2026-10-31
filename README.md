@@ -61,6 +61,9 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   host from a catalog of extensions) for the editor name of the expression, written in the editor's
   syntax `Name("object", parameters)`. Before, `Expression ID 83("Ini")"Game", "sound")` lacked the
   separator between the object and the parameters.
+- Directions (direction parameter, Shoot parameter): the 32-bit mask (bit n = direction n of the
+  editor's counter-clockwise wheel, 0 = right, 8 = up, 16 = left, 24 = down) is listed as
+  `16 (left)` or `{0 (right), 16 (left)}`, instead of a row of dots.
 - Decimal constants: MFAs store a regular IEEE double, which `ByteReader.ReadDouble` read as the
   fixed-point format of some non-Windows builds (1.25 showed as 1072955392). Decimals are rendered
   in the invariant culture (`1.25`, not `1,25`) and keep a decimal point when round (`1.0`, not `1`).
