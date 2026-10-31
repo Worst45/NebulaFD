@@ -15,9 +15,15 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
             ChunkName = "Parameter";
         }
 
+        // Raw bytes of the parameter (code included), for debugging tools
+        public byte[] Raw = new byte[0];
+
         public override void ReadCCN(ByteReader reader, params object[] extraInfo)
         {
+            long startPosition = reader.Tell();
             long endPosition = reader.Tell() + Math.Abs(reader.ReadShort());
+            Raw = reader.ReadBytes((int)(endPosition - startPosition - 2));
+            reader.Seek(startPosition + 2);
 
             Code = reader.ReadShort();
             Data = Code switch
