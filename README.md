@@ -69,6 +69,11 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   in the invariant culture (`1.25`, not `1,25`) and keep a decimal point when round (`1.0`, not `1`).
 
 ## Older formats and file structure
+- Event blocks: the end of the `Evts` / `STVE` block was computed 4 bytes too early, and `STVE` blocks
+  end with 2 zero bytes that are not an event. The reader ended up out of step with the next
+  identifiers: endless loop or read past the end of the file on projects with global events, lost
+  comments on others. The reader now stops at the end of the block, and reaching the end of the data
+  while looking for an identifier is an error instead of an endless loop.
 - Frame: the field after the frame password is read as an auto-Unicode string (older builds store an
   empty string, which was read as a negative size).
 - Non-Unicode MMF2 MFAs: no language ID after the build number, and no "is Unicode" integer for the

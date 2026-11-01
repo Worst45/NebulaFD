@@ -141,17 +141,26 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
 			while (true)
             {
                 string identifier = reader.ReadAscii(4);
+                // ReadAscii returns "" at the end of the data: without this, the loop never ends
+                if (identifier.Length < 4)
+                    throw new Exception("End of file reached while reading the events");
 
                 if (identifier == "Evts" || identifier == "STVE")
                 {
-                    long endPosition = reader.Tell() + reader.ReadInt();
-                    while (reader.Tell() < endPosition)
+                    // The size does not count its own 4 bytes
+                    int evtsSize = reader.ReadInt();
+                    long endPosition = reader.Tell() + evtsSize;
+                    // 14 = size of an event's header. The block can end with bytes that are not an
+                    // event (2 zero bytes seen in global events): stop before them, then skip them,
+                    // or the next identifiers are read out of step.
+                    while (reader.Tell() + 14 <= endPosition)
                     {
                         Event newEvent = new Event();
                         newEvent.Parent = this;
                         newEvent.ReadMFA(reader);
                         Events.Add(newEvent);
                     }
+                    reader.Seek(endPosition);
                 }
                 else if (identifier == "Rems" || identifier == "SMER")
                 {
