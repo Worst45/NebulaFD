@@ -10,18 +10,19 @@ repository has no license. The original README follows.
 
 # What this fork brings
 
+<!-- Keep this section short: quick bullet points on the main features, for a human who only wants
+to know what this fork adds to the original project. Never replace it with a block of text. New
+changes go in "Detailed changes" below; only add or extend a bullet here for a new main feature. -->
+
 - **Reads almost any `.mfa` project**: older Fusion 2.5 and Multimedia Fusion 2 projects, and
   projects with several frames.
-- **Events shown as in the editor**: each condition and action names the right object, object
-  group, flag and global value.
+- **Events shown as in the editor**: each condition, action and expression names the right object,
+  object group, flag and global value.
 - **The structure of the event list is kept**: groups (and whether they start disabled) and the
   author's comments.
-- **Correct values**: decimal numbers, zones, "Jump to frame", and decimal numbers that stay
-  distinct from whole numbers (`1.0` vs `1`), menu options in nested sub-menus.
-- **Extension expressions as in the editor** (`GroupItemValue("Ini", "Game", "sound")`) when the host
-  application provides their names.
-- **Fewer crashes** on unusual projects: installer settings, menus, icons, objects that can't be
-  converted.
+- **Correct values**: decimal numbers, zones, directions, menu options, "Jump to frame".
+- **Fewer crashes and freezes** on unusual projects: global events, installer settings, menus, icons,
+  objects that can't be converted.
 - **Easier to investigate unknown parameters**: their raw bytes are kept, for debugging.
 
 # Detailed changes
