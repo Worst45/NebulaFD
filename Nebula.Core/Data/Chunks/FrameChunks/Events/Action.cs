@@ -432,16 +432,6 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 			groupParam.Parent = Parameters[0];
 		}
 
-        // Fallback text for actions whose meaning is not known (kept for unknown actions):
-        // shows the number and the parameters instead of misreading them as another object's action.
-        private string GenericActionText(string header)
-        {
-            string output = header + $"Event ID {Num}, {Parameters.Length} Parameters";
-            for (int i = 0; i < Parameters.Length; i++)
-                output += (i == 0 ? " { " : "") + Parameters[i] + (i + 1 < Parameters.Length ? ", " : " }");
-            return output;
-        }
-
         public override string ToString()
         {
             string Header = "";
