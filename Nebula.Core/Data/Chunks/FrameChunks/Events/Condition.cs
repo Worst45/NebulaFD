@@ -530,6 +530,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                             return $"User has left the computer for {Parameters[0]}";
                         case -4:
                             return $"Every {Parameters[0]}";
+                        case -3: // older "Timer equals" (fires once when the timer reaches the value), -7 in recent builds
+                            return $"Timer equals {Parameters[0]}";
                         case -2:
                             return $"Timer is less than {Parameters[0]}";
                         case -1:
