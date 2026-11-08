@@ -35,6 +35,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         public int FrameMoveTimer;                            // 0x3347
         public FrameEffects FrameEffects = new();             // 0x3349
         public int Handle = -1;                               // 0x334C
+        public FrameInclude? FrameInclude;                    // MFA frame chunk 0x31
 
         public MFAFrameInfo MFAFrameInfo = new();
         public Bitmap? BitmapCache = null;

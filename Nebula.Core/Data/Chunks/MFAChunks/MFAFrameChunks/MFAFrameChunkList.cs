@@ -22,7 +22,7 @@ namespace Nebula.Core.Data.Chunks.MFAChunks.MFAFrameChunks
             //0x002E
             //0x002F
             //0x0030
-            //0x0031         FrameInclude
+            { 0x0031, typeof(FrameInclude)        },
         };
     }
 }
