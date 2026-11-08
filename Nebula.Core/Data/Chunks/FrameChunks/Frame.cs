@@ -43,6 +43,20 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         // MFA: object handles are per frame (the same handle can be a different object in another frame)
         public Dictionary<int, ObjectInfo> MFAItems = new();
 
+        // Frames included in this one (FrameInclude), following an included frame that includes
+        // another one; each frame once, so a loop of inclusions cannot hang
+        public IEnumerable<Frame> GetIncludedFrames()
+        {
+            var seen = new HashSet<int> { Handle };
+            Frame? current = this;
+            while (current?.FrameInclude is FrameInclude inc && inc.IncludedFrameHandle >= 0 && seen.Add(inc.IncludedFrameHandle))
+            {
+                current = NebulaCore.PackageData?.Frames.FirstOrDefault(f => f.Handle == inc.IncludedFrameHandle);
+                if (current != null)
+                    yield return current;
+            }
+        }
+
         public Frame()
         {
             ChunkName = "Frame";

@@ -97,6 +97,9 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   `as ObjectCommon` instead of a cast.
 - Included frame (MFA frame chunk 0x31, `Frame.FrameInclude`): handle of the frame included in
   this one; it was skipped as unknown.
+- Objects of an included frame used in the including frame's events (shortcuts in the editor)
+  are found through `Frame.GetIncludedFrames()`; an object found nowhere takes the name stored
+  with its EventObject instead of "Unknown Object".
 
 ## Tooling
 - `Parameter.Raw` keeps each parameter's raw bytes (code included), to decode unknown parameters.

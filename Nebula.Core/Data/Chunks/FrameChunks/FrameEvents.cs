@@ -279,6 +279,11 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
             // Object handles are per frame in MFAs: look in this frame first
             if (Parent != null && Parent.MFAItems.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? frameObject))
                 return frameObject;
+            // Objects of an included frame are usable in this frame's events (shortcuts in the editor)
+            if (Parent != null)
+                foreach (Frame included in Parent.GetIncludedFrames())
+                    if (included.MFAItems.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? includedObject))
+                        return includedObject;
             NebulaCore.PackageData.FrameItems.Items.TryGetValue((int)evtObj.ItemHandle, out ObjectInfo? objectInfo);
             return objectInfo;
         }
@@ -300,7 +305,10 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         {
             if (IsBehaviour && EventObjects.TryGetValue(handle, out EventObject? behaviourObject))
                 return behaviourObject.Name;
-            return GetMFAObject(handle)?.Name ?? GetMFAQualifierName(handle) ?? "Unknown Object";
+            // Last resort: the name stored with the EventObject itself
+            return GetMFAObject(handle)?.Name ?? GetMFAQualifierName(handle)
+                ?? (EventObjects.TryGetValue(handle, out EventObject? evtObj) && !string.IsNullOrEmpty(evtObj.Name) ? evtObj.Name : null)
+                ?? "Unknown Object";
         }
 
         public override void WriteCCN(ByteWriter writer, params object[] extraInfo)
