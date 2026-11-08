@@ -69,6 +69,7 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   instead of `[` (contributed by csando).
 - Special expressions 67-71 numbered as in Fusion's runtime: `RuntimeName$`, `ReplaceString$(`,
   `Sign(`, `Lerp(`, `InvLerp(` (they were shifted by one, and 68 was unknown).
+- Timer condition -3, the older "Timer equals" (it threw "Could not find ObjectType -4, Num -3").
 - Sub-Application actions 88 "Show" and 89 "Hide" (they threw `IndexOutOfRangeException`;
   contributed by csando).
 - Events of a behaviour: `FrameEvents.IsBehaviour` makes object names come from the behaviour's own
@@ -94,6 +95,9 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   twice.
 - An object whose properties cannot be converted is still registered; object properties are read with
   `as ObjectCommon` instead of a cast.
+
+- Included frame (MFA frame chunk 0x31, `Frame.FrameInclude`): handle of the frame included in
+  this one; it was skipped as unknown.
 
 ## Tooling
 - `Parameter.Raw` keeps each parameter's raw bytes (code included), to decode unknown parameters.
