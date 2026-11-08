@@ -27,6 +27,10 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         public Comment[] Comments = new Comment[0];
         public EventGroup[] EventGroups = new EventGroup[0];
         public Dictionary<int, EventObject> EventObjects = new();
+        // Events of a behaviour (read by MfaDump from the behaviour's data): the EventObjects table is
+        // self-contained, so object names come from it instead of from the frame's objects.
+        public bool IsBehaviour;
+
         public int EditorData;
         public ushort ConditionWidth;
         public short ObjectHeight;
@@ -128,6 +132,9 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
             }
         }
 
+        /// <summary>Identifier of the block being read by ReadMFA (to say where a read failed).</summary>
+        public string LastIdentifier = "";
+
         public override void ReadMFA(ByteReader reader, params object[] extraInfo)
         {
             uint size = reader.ReadUInt();
@@ -141,6 +148,7 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
 			while (true)
             {
                 string identifier = reader.ReadAscii(4);
+                LastIdentifier = identifier;
                 // ReadAscii returns "" at the end of the data: without this, the loop never ends
                 if (identifier.Length < 4)
                     throw new Exception("End of file reached while reading the events");
@@ -264,6 +272,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         /// </summary>
         public ObjectInfo? GetMFAObject(int handle)
         {
+            if (IsBehaviour)
+                return null;
             if (!EventObjects.TryGetValue(handle, out EventObject? evtObj) || evtObj.ObjectType != 1)
                 return null;
             // Object handles are per frame in MFAs: look in this frame first
@@ -288,6 +298,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks
         /// </summary>
         public string GetMFAObjectName(int handle)
         {
+            if (IsBehaviour && EventObjects.TryGetValue(handle, out EventObject? behaviourObject))
+                return behaviourObject.Name;
             return GetMFAObject(handle)?.Name ?? GetMFAQualifierName(handle) ?? "Unknown Object";
         }
 

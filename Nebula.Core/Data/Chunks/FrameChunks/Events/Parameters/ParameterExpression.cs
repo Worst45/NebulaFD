@@ -396,6 +396,8 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
                             return "RuntimeName$";
                         case 67:
                             return "ReplaceString$(";
+                        case 68:
+                            return "ReplaceString$(";
                     }
                 case 0:
                     switch (Num)

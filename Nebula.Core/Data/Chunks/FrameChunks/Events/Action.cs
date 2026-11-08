@@ -432,6 +432,16 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
 			groupParam.Parent = Parameters[0];
 		}
 
+        // Fallback text for actions whose meaning is not known (kept for unknown actions):
+        // shows the number and the parameters instead of misreading them as another object's action.
+        private string GenericActionText(string header)
+        {
+            string output = header + $"Event ID {Num}, {Parameters.Length} Parameters";
+            for (int i = 0; i < Parameters.Length; i++)
+                output += (i == 0 ? " { " : "") + Parameters[i] + (i + 1 < Parameters.Length ? ", " : " }");
+            return output;
+        }
+
         public override string ToString()
         {
             string Header = "";
@@ -829,12 +839,16 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events
                                             return Header + $"Set global value {Parameters[0]} to {Parameters[1]}";
                                         return Header + $"Set Y scale to {Parameters[0]} (Quality = {Parameters[1]})";
                                     case 88:
+                                        if (ObjectType == 9)
+                                            return Header + "Show"; // seen in the editor: Sub-Application "Show"
                                         if (ObjectType == 3)
                                             return Header + $"Set alterable string to {Parameters[0]}";
                                         if (ObjectType == 8)
                                             return Header + $"Select Line num {Parameters[0]}";
                                         return Header + $"Set angle to {Parameters[0]} (Quality = {Parameters[1]})";
                                     case 89:
+                                        if (ObjectType == 9)
+                                            return Header + "Hide"; // follows Show in the Fusion editor's action list
                                         if (ObjectType == 8)
                                             return Header + $"Select Paragraph num {Parameters[0]}";
                                         if (Parameters[1].Data is ParameterShort)
