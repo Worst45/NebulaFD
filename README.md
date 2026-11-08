@@ -95,7 +95,6 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   twice.
 - An object whose properties cannot be converted is still registered; object properties are read with
   `as ObjectCommon` instead of a cast.
-
 - Included frame (MFA frame chunk 0x31, `Frame.FrameInclude`): handle of the frame included in
   this one; it was skipped as unknown.
 
