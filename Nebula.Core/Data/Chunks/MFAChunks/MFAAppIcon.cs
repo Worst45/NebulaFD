@@ -1,5 +1,6 @@
 ﻿using Nebula.Core.Data.PackageReaders;
 using Nebula.Core.Memory;
+using Nebula.Core.Utilities;
 
 namespace Nebula.Core.Data.Chunks.MFAChunks
 {
@@ -24,7 +25,7 @@ namespace Nebula.Core.Data.Chunks.MFAChunks
             for (int i = 0; i < IconHandles.Length; i++)
                 IconHandles[i] = reader.ReadUInt();
 
-            if (IconHandles.Length == 2)
+            if (IconHandles.Length == 2 && !Parameters.DontIncludeImages)
             {
                 var iconBank = ((MFAPackageData)NebulaCore.PackageData).IconBank;
                 AddIcon(256, IconHandles[1]);

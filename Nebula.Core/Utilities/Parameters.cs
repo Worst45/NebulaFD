@@ -4,7 +4,14 @@ namespace Nebula.Core.Utilities
 {
     public class Parameters
     {
-        public static Parameters Inst = new Parameters();
+        // Created on first use from config.json; a tool can set its own instance before reading a file
+        private static Parameters? _inst;
+        private static readonly object _instLock = new();
+        public static Parameters Inst
+        {
+            get { lock (_instLock) return _inst ??= new Parameters(); }
+            set { lock (_instLock) _inst = value; }
+        }
         public string comment_images = "Whether or not to avoid reading image data";
         public bool ignore_images = false;
         public string comment_fonts = "Whether or not to avoid reading font data";
@@ -42,8 +49,13 @@ namespace Nebula.Core.Utilities
         public string comment_frames = "An array of frame ids to ignore reading, index starts at 0";
         public int[] ignore_frames = new int[0];
 
-        public Parameters()
+        public Parameters() : this(true) { }
+
+        // loadConfig = false: default values, config.json is neither read nor written
+        public Parameters(bool loadConfig)
         {
+            if (!loadConfig)
+                return;
             if (File.Exists("config.json"))
                 JsonConvert.PopulateObject(File.ReadAllText("config.json"), this);
             string[] seri = JsonConvert.SerializeObject(this, Formatting.Indented).Split('\n');

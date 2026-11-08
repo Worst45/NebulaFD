@@ -5,7 +5,8 @@ namespace Nebula.Core.Utilities
 {
     public static class Logger
     {
-        const bool DoLog = true;
+        // false: no console log and no in-memory log (e.g. a tool that only reads a file)
+        public static bool DoLog = true;
         private static string FileName = string.Empty;
         private static string TimeStamp = string.Empty;
         private static List<string> Logs = new();

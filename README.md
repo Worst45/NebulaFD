@@ -102,6 +102,7 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
   with its EventObject instead of "Unknown Object".
 
 ## Tooling
+- Options for a tool that only reads a file: `Logger.DoLog = false` (no console log), `Parameters.Inst = new Parameters(loadConfig: false)` (config.json neither read nor written: several processes of one exe no longer race on it), and `ignore_images` now honoured for MFAs (image headers read, pixel data skipped, not decompressed).
 - `Parameter.Raw` keeps each parameter's raw bytes (code included), to decode unknown parameters.
 - `GetCommitHash()` no longer throws in a single-file publish (empty `Assembly.Location`).
 

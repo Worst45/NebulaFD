@@ -118,7 +118,7 @@ namespace Nebula.Core.Data.PackageReaders
                     foreach (int size in new[] { 64, 32, 16 })
                     {
                         uint iconHandle = reader.ReadUInt();
-                        if (IconBank.Images.ContainsKey(iconHandle))
+                        if (!Parameters.DontIncludeImages && IconBank.Images.ContainsKey(iconHandle))
                             try { NebulaCore.CurrentReader.Icons[size] = IconBank[iconHandle].GetBitmap(); }
                             catch { } // Empty or unreadable icon
                     }
