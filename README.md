@@ -65,6 +65,15 @@ They mostly concern reading `.mfa` files; a few also affect compiled games. Test
 - Directions (direction parameter, Shoot parameter): the 32-bit mask (bit n = direction n of the
   editor's counter-clockwise wheel, 0 = right, 8 = up, 16 = left, 24 = down) is listed as
   `16 (left)` or `{0 (right), 16 (left)}`, instead of a row of dots.
+- Alterable values / strings from index 26 show two letters (`BA`, `BB`…, as in expressions)
+  instead of `[` (contributed by csando).
+- Special expressions 67-71 numbered as in Fusion's runtime: `RuntimeName$`, `ReplaceString$(`,
+  `Sign(`, `Lerp(`, `InvLerp(` (they were shifted by one, and 68 was unknown).
+- Sub-Application actions 88 "Show" and 89 "Hide" (they threw `IndexOutOfRangeException`;
+  contributed by csando).
+- Events of a behaviour: `FrameEvents.IsBehaviour` makes object names come from the behaviour's own
+  object table, and `FrameEvents.LastIdentifier` tells which block a failed read was in
+  (contributed by csando).
 - Decimal constants: MFAs store a regular IEEE double, which `ByteReader.ReadDouble` read as the
   fixed-point format of some non-Windows builds (1.25 showed as 1072955392). Decimals are rendered
   in the invariant culture (`1.25`, not `1,25`) and keep a decimal point when round (`1.0`, not `1`).

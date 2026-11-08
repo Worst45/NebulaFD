@@ -392,10 +392,18 @@ namespace Nebula.Core.Data.Chunks.FrameChunks.Events.Parameters
                             return "Range(";
                         case 65:
                             return "RRandom(";
-                        case 66:
-                            return "RuntimeName$";
+                        // Numbers from Fusion's HTML5 runtime (Expressions.js), names from the editor's
+                        // list: there is no expression 66
                         case 67:
+                            return "RuntimeName$";
+                        case 68:
                             return "ReplaceString$(";
+                        case 69:
+                            return "Sign(";
+                        case 70:
+                            return "Lerp(";
+                        case 71:
+                            return "InvLerp(";
                     }
                 case 0:
                     switch (Num)
